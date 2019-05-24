@@ -6,22 +6,17 @@
 book1=$@
 if [ -z ${book1} ]
 then
-    read -p "请输入书籍变量" book1
+    read -p "请输入书籍变量:" book1
 fi
-book1=$(echo $book1|xargs -d , printf "%s\n")
-#function download ()
-#{
-#    
-#    ZHENHE=$(curl http://v2.api.dmzj.com/novel/chapter/$(echo $book|xargs -d ,).json)
-#    wget https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt
-#}
-while [ -n ${book1} ]
+#book1=$(echo $book1|xargs -d , printf "%s\n")
+
+while [ -n "$(echo ${1}|sed -n '/^[0-9][0-9]*$/p')" ]
 do
-    title=$(echo ${book1}|sed -n "1p")
+    title=$1
     json0=$(curl http://v2.api.dmzj.com/novel/chapter/${title}.json) #获取索引json
     count2=0
-    json2=aaaaavolume_id
-    while [ $(json2:5:9} == volume_id ]
+    json1=aaaaavolume_id
+    while [ "${json1:5:9}" == "volume_id" ]
     do
 	json1=$(echo ${json0}|jq .[${count2}]) #拆分json
 	count2=$(echo "${count2}+1"|bc)
@@ -37,5 +32,5 @@ do
 	    curl https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt >${title}_${volume}_${chapter}.txt
 	done
     done
-    book1=$(echo $book1|sed '1d')
+    shift
 done
