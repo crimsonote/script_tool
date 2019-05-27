@@ -11,10 +11,9 @@ json0=$(curl "http://s.acg.dmzj.com/lnovelsum/search.php?s=${search}")
 #json0=$(cat search.json)
 json1=${json0:20}
 count1=0
-json2=aaaaaauthor
+json2=$(echo $json1|jq .[${count1}])
 while [ -n "${search}" ]&&[ "${json2:5:6}" == author ]
 do
-    json2=$(echo $json1|jq .[${count1}])
     count1=$(echo "${count1}+1"|bc)
     lnovel_name=$(echo $json2|jq .lnovel_name)
     echo "书名：《${lnovel_name}》"
@@ -31,7 +30,8 @@ do
 	    book=$(echo "${json2}"|jq .lnovel_url |xargs -d / printf "%s\n" |sed -n "2p")
 	    book1=$(echo "${book1} ${book}")
 		    ;;
-	esac
+    esac
+    json2=$(echo $json1|jq .[${count1}])
 done
 echo $book1
 #./dmzj.sh ${book1}

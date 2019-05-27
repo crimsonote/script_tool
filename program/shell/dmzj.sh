@@ -15,22 +15,22 @@ do
     title=$1
     json0=$(curl http://v2.api.dmzj.com/novel/chapter/${title}.json) #获取索引json
     count2=0
-    json1=aaaaavolume_id
+    json1=$(echo ${json0}|jq .[${count2}]) #拆分json
     while [ "${json1:5:9}" == "volume_id" ]
     do
-	json1=$(echo ${json0}|jq .[${count2}]) #拆分json
 	count2=$(echo "${count2}+1"|bc)
 	volume=$(echo ${json1}|jq .id) #获取卷id
 	json2=$(echo ${json1}|jq .chapters)#获取卷索引
 	count3=0
-	json3=aaaaachapter_id
+	json3=$(echo ${json2}|jq .[${count3}])
 	while [ "${json3:5:10}" == "chapter_id" ]
 	do
-	    json3=$(echo ${json2}|jq .[${count3}])
 	    count3=$(echo "${count3}+1"|bc)
 	    chapter=$(echo ${json3}|jq .chapter_id) #获取章节id
 	    curl https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt >${title}_${volume}_${chapter}.txt
+	    json3=$(echo ${json2}|jq .[${count3}])
 	done
+	json1=$(echo ${json0}|jq .[${count2}])
     done
     shift
 done
