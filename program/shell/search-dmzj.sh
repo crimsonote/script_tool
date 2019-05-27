@@ -5,6 +5,7 @@ search=$@
 if [ -z ${search} ]
 then
     read -p "请输入要搜索的关键词:" search
+
 fi
 
 json0=$(curl "http://s.acg.dmzj.com/lnovelsum/search.php?s=${search}")

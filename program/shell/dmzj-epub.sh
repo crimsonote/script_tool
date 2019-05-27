@@ -87,31 +87,37 @@ do
 	    count3=$(echo "${count3}+1"|bc)
 	    chapter=$(echo ${json3}|jq .chapter_id)  #获取章节id
 	    chapter_name=$(echo ${json3}|jq .chapter_name -r)  #获取章节名
-#___________wget -t 0  https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt -O ${title}_${volume}_${chapter}.txt #下载正文
+	    wget -t 0  https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt -O ${title}_${volume}_${chapter}.txt #下载正文
 	    json3=$(echo ${json2}|jq .[${count3}])
 	    
 	    #epub，html
 	    echo '<h2 id="'"${volume}_${chapter}"'">'"${chapter_name}"'</h2>' >> epub/book/${volume}.html  #生成章节头
 	    text_chapter=$(cat ${title}_${volume}_${chapter}.txt)
-	    image_download=$(echo ${title}|sed 's#https://xs.dmzj.com#\n&#g'|sed 's#"./>#\n#g'|grep --color=no xs.dmzj.com)  #筛选插画url
+	    image_download=$(echo ${text_chapter}|sed 's#https://xs.dmzj.com#\n&#g'|sed 's#".#\n#g'|grep --color=no xs.dmzj.com/img)  #筛选插画url
 	    navpoint_fun id${chapter} "${chapter_name}" ${volume}.html#${volume}_${chapter} #目录输出
+	   
+	    
 
-
-	    rows=0 #预定义图片变量
-	    while [ -n "${image_download}" ]
+	    rows=1 #预定义图片变量
+	    [ -n ${image_download:0:5} ] && image_url=$(echo "${image_download}"|sed -n "${rows}p")
+	    while [ -n "${image_url}" ]
 	    do
 		rows=$(echo "${rows}+1"|bc)
-		image_url=$(echo "${image_down}"|sed -n "${rows}p")
-		wget -t 0  ${image_url}  -O epub/book/image/${volume}_${chapter}_${rows}.${image_url##*.} 
-		text_chapter=$(echo "test_chapter"|sed "s%${image_url}%image/${volume}_${chapter}_${rows}.${image_url##*.}%g"|sed 's#<img#\n<p>& width="90%"#g'|sed 's#"./>#&</p>#g')
+		wget -t 0  ${image_url}  -O epub/book/image/${volume}_${chapter}_${rows}.${image_url##*.}
+		text_chapter=$(echo "${text_chapter}"|sed "s%${image_url}%image/${volume}_${chapter}_${rows}.${image_url##*.}%g") 
 		manifest_fun ${volume}_${chapter}_${rows} image/${volume}_${chapter}_${rows}.${image_url##*.}  image/jpeg  #列出文件
+		image_url=$(echo "${image_download}"|sed -n "${rows}p")
 		sleep $(随机) #随机暂停s秒
 	    done   #章节图
-		 #|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g'|sed 's#^<p> *</p>$# #g'|sed 's#<br */># #g'|sed "1d" >>epub/book/${volume}.html
-		 #|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g'|sed '1d'>> epub/book/${volume}.html
-	    #sed 's#<br */>#\n#g'|sed '/^\r*$/d'|sed "s#^#<p>#g"|sed "s%$%</p>%g"|sed "1d" >>
-	    ${text_chapter}
+
+
+
+	    
+	    #|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g'|sed 's#^<p> *</p>$# #g'|sed 's#<br */># #g'|sed "1d" >>epub/book/${volume}.html
+	    echo "${text_chapter}"|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#</br */>#&\n#g'|sed 's#<img#\n& "#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g' >> epub/book/${volume}.html
+	    #sed 's#<br */>#\n#g'|sed '/^\r*$/d'|sed "s#^#<p>#g"|sed "s%$%</p>%g"|sed "1d" >>${text_chapter}
 	    sleep $(随机)
+	    image_download=$(echo -n)  #重置变量
 	done   #章之间
 	json1=$(echo ${json0}|jq .[${count2}])
 	echo '</body></html>' >> epub/book/${volume}.html #卷结束
@@ -123,7 +129,9 @@ do
     echo '<manifest>'"${manifest}"'</manifest>' >> epub/book/index.opf #文件列表索引结束
     echo '<spine>'"${spine}"'</spine>' >> epub/book/index.opf #加载顺序列表索引结束
     echo '<guide></guide></package>' >> epub/book/index.opf  #结束包装文件
-    cd epub&&zip -r ../../${bookname}完全原样.epub book  META-INF  minetype  #打包epub
+    cd epub&&zip -9 -r ../../${bookname}.epub book  META-INF  minetype  #打包epub
+
+
     cd .. #返回脚本执行时路径
 
 done #各书之间
