@@ -77,7 +77,7 @@ do
 
 	#epub,html生成
 	echo '<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><meta charset="utf-8" /><title>'"${bookname}-${volume_name}"'</title></head><body><h1 id='"${volume}"'>'"${volume_name}"'</h1>'  > epub/book/${volume}.html  #生成html头
-	navpoint_fun volume_${volume} "${volume_name}" ${volume}.html#${volume} y #追加链接至目录文件 （2）
+	navpoint_fun volume_${volume} "${volume_name}" ${volume}.html  y #追加链接至目录文件 （2）
 	manifest_fun ${volume} ${volume}.html application/xhtml+xml     #追加当前卷html入包装文件
 	spine_fun ${volume}.html  #载入文件顺序列表
 
@@ -107,9 +107,10 @@ do
 		manifest_fun ${volume}_${chapter}_${rows} image/${volume}_${chapter}_${rows}.${image_url##*.}  image/jpeg  #列出文件
 		sleep $(随机) #随机暂停s秒
 	    done   #章节图
-	    echo ${text_chapter}|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g'|sed 's#^<p> *</p>$# #g'|sed 's#<br */># #g'|sed "1d" >>epub/book/${volume}.html
-		#|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g'|sed '1d'>> epub/book/${volume}.html
-		#sed 's#<br */>#\n#g'|sed '/^\r*$/d'|sed "s#^#<p>#g"|sed "s%$%</p>%g"|sed "1d" >> 
+		 #|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g'|sed 's#^<p> *</p>$# #g'|sed 's#<br */># #g'|sed "1d" >>epub/book/${volume}.html
+		 #|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g'|sed '1d'>> epub/book/${volume}.html
+	    #sed 's#<br */>#\n#g'|sed '/^\r*$/d'|sed "s#^#<p>#g"|sed "s%$%</p>%g"|sed "1d" >>
+	    ${text_chapter}
 	    sleep $(随机)
 	done   #章之间
 	json1=$(echo ${json0}|jq .[${count2}])
@@ -122,7 +123,7 @@ do
     echo '<manifest>'"${manifest}"'</manifest>' >> epub/book/index.opf #文件列表索引结束
     echo '<spine>'"${spine}"'</spine>' >> epub/book/index.opf #加载顺序列表索引结束
     echo '<guide></guide></package>' >> epub/book/index.opf  #结束包装文件
-    cd epub&&zip -r ../../${bookname}.epub book  META-INF  minetype  #打包epub
+    cd epub&&zip -r ../../${bookname}完全原样.epub book  META-INF  minetype  #打包epub
     cd .. #返回脚本执行时路径
 
 done #各书之间
