@@ -23,7 +23,7 @@ function navpoint_fun()
     fi
     echo '<navPoint id="'$1'"><navLabel><text>'$2'</text></navLabel><content src="'$3'" />'$a  >> epub/book/toc.ncx
 }
-function 随机()
+function suiji()
 {
     local a=$(echo $RANDOM % 20|bc);echo "暂停${a}s" >&2;echo $a
 }
@@ -110,7 +110,7 @@ do
 		text_chapter=$(echo "${text_chapter}"|sed "s%${image_url}%image/${volume}_${chapter}_${rows}.${image_url##*.}%g") 
 		manifest_fun ${volume}_${chapter}_${rows} image/${volume}_${chapter}_${rows}.${image_url##*.}  image/jpeg  #列出文件
 		image_url=$(echo "${image_download}"|sed -n "${rows}p")
-		sleep $(随机) #随机暂停s秒
+		sleep $(suiji) #随机暂停s秒
 	    done   #章节图
 
 
@@ -119,7 +119,7 @@ do
 	    #|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g'|sed 's#^<p> *</p>$# #g'|sed 's#<br */># #g'|sed "1d" >>epub/book/${volume}.html
 	    echo "${text_chapter}"|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#</br */>#&\n#g'|sed 's#<img#\n& #g'|sed 's#^#<p>#g'|sed 's#$#</p>#g' >> epub/book/${volume}.html
 	    #sed 's#<br */>#\n#g'|sed '/^\r*$/d'|sed "s#^#<p>#g"|sed "s%$%</p>%g"|sed "1d" >>${text_chapter}
-	    sleep $(随机)
+	    sleep $(suiji)
 	    image_download=$(echo -n)  #重置变量
 	done   #章之间
 	json1=$(echo ${json0}|jq .[${count2}])
