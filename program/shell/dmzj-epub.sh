@@ -11,11 +11,11 @@ fi
 #函数
 function manifest_fun()
 {   #epub文件列表追加
-    manifest=$(echo ${manifest}'<item id="'${1}'" href="'${2}'" media-type="'${3}'" '${4}' />')
+    manifest=$(echo ${manifest}'<item id="'${1}'" href="'${2}'" media-type="'${3}'"  '${4}' />')
 }
 function spine_fun()
 {   #epub主体文件读取顺序 1.url
-    spine=$(echo ${spine}'<itemref idref="'${1}'" linear="yes"/>')
+    spine=$(echo ${spine}'<itemref idref="'${1}'" linear="yes" />')
 }
 function navpoint_fun()
 {    #目录生成  1.id 2.title 3.url
@@ -25,14 +25,15 @@ function navpoint_fun()
 }
 function suiji()
 {
-    local a=$(echo $RANDOM % 20|bc);echo "暂停${a}s" >&2;echo $a
+    #local a=$(echo $RANDOM % 20|bc);echo "暂停${a}s" >&2;echo $a
+    echo 0
 }
 function html_entity()      #对html预留符号替换为实体字符
 {
     sed  's/&/\&amp;/g'|sed 's/"/\&quot;/g'|sed 's/</\&lt;/g'|sed 's/>/\&gt;/g'|sed "s/'/\&apos;/g"
 }
 
-
+pwd1=$(pwd)
 while [ -n "$(echo ${1}|sed -n '/^[0-9][0-9]*$/p')" ]
 do
     title=$1
@@ -59,7 +60,7 @@ do
     manifest_fun cover_image image/cover.jpg image/jpeg #追加封面图片文件
 
     
-    echo '<?xml version="1.0" encoding="UTF-8"?><package version="3.0" xmlns="http://www.idpf.org/2007/opf" unique-identifier="epub"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf"><dc:identifier id="epub">'"urn:uuid:$(uuidgen||cat /proc/sys/kernel/random/uuid)"'</dc:identifier><dc:title>'"${bookname}"'</dc:title><dc:language>'"${LANG%.*}"'</dc:language><dc:subject>'"${types}"'</dc:subject><dc:description>'"${introduction}"'</dc:description><dc:creator>'"${authors}"'</dc:creator><meta name="cover" content="cover_image"/></metadata>' > epub/book/index.opf #初始化包装文件
+    echo '<?xml version="1.0" encoding="UTF-8"?><package version="3.0" xmlns="http://www.idpf.org/2007/opf" unique-identifier="epub"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf"><dc:identifier id="epub">'"urn:uuid:$(uuidgen||cat /proc/sys/kernel/random/uuid)"'</dc:identifier><dc:title>'"${bookname}"'</dc:title><dc:language>'"$(echo ${LANG%.*}|tr '_' '-')"'</dc:language><dc:subject>'"${types}"'</dc:subject><dc:description>'"${introduction}"'</dc:description><dc:creator>'"${authors}"'</dc:creator><meta name="cover" content="cover_image"/></metadata>' > epub/book/index.opf #初始化包装文件
     echo '<?xml version="1.0" encoding="utf-8"?><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head></head><docTitle><text>'"${bookname}"'</text></docTitle><navMap>' > epub/book/toc.ncx  #初始化目录索引文件
     echo '<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8" /><title>'"${bookname}"'</title></head><body><p id="title_t"><img src="image/cover.jpg" /></p><h1>'${bookname}'</h1></body></html>' > epub/book/title.html   #生成标题文件
     manifest_fun title_cover title.html application/xhtml+xml  #追加标题文件
@@ -81,7 +82,7 @@ do
 	#epub,html生成
 	echo '<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><meta charset="utf-8" /><title>'"${bookname}-${volume_name}"'</title></head><body><h1 id="'"${volume}"'">'"${volume_name}"'</h1>'  > epub/book/${volume}.html  #生成html头
 	navpoint_fun volume_${volume} "${volume_name}" ${volume}.html  y #追加链接至目录文件 （2）
-	manifest_fun ${volume} ${volume}.html application/xhtml+xml     #追加当前卷html入包装文件
+	manifest_fun ${volume}.html  ${volume}.html application/xhtml+xml     #追加当前卷html入包装文件
 	spine_fun ${volume}.html  #载入文件顺序列表
 
 	
@@ -90,7 +91,7 @@ do
 	    count3=$(echo "${count3}+1"|bc)
 	    chapter=$(echo ${json3}|jq .chapter_id)  #获取章节id
 	    chapter_name=$(echo ${json3}|jq .chapter_name -r|html_entity)  #获取章节名
-	    wget -t 0  https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt -O ${title}_${volume}_${chapter}.txt #下载正文
+#	    wget -t 0  https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt -O ${title}_${volume}_${chapter}.txt #下载正文
 	    json3=$(echo ${json2}|jq .[${count3}])
 	    
 	    #epub，html
@@ -106,7 +107,7 @@ do
 	    while [ -n "${image_url}" ]
 	    do
 		rows=$(echo "${rows}+1"|bc)
-		wget -t 0  ${image_url}  -O epub/book/image/${volume}_${chapter}_${rows}.${image_url##*.}
+#		wget -t 0  ${image_url}  -O epub/book/image/${volume}_${chapter}_${rows}.${image_url##*.}
 		text_chapter=$(echo "${text_chapter}"|sed "s%${image_url}%image/${volume}_${chapter}_${rows}.${image_url##*.}%g") 
 		manifest_fun ${volume}_${chapter}_${rows} image/${volume}_${chapter}_${rows}.${image_url##*.}  image/jpeg  #列出文件
 		image_url=$(echo "${image_download}"|sed -n "${rows}p")
@@ -117,7 +118,7 @@ do
 
 	    
 	    #|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g'|sed 's#^<p> *</p>$# #g'|sed 's#<br */># #g'|sed "1d" >>epub/book/${volume}.html
-	    echo "${text_chapter}"|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#</br */>#&\n#g'|sed 's#<img#\n& #g'|sed 's#^#<p>#g'|sed 's#$#</p>#g' >> epub/book/${volume}.html
+	    echo "${text_chapter}"|sed 's#>#&\n#g'|sed '/<div/d'|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#</br */>#&\n#g'|sed 's#<img#\n& #g'|sed 's#^#<p>#g'|sed 's#$#</p>#g' >> epub/book/${volume}.html
 	    #sed 's#<br */>#\n#g'|sed '/^\r*$/d'|sed "s#^#<p>#g"|sed "s%$%</p>%g"|sed "1d" >>${text_chapter}
 	    sleep $(suiji)
 	    image_download=$(echo -n)  #重置变量
@@ -132,9 +133,12 @@ do
     echo '<manifest>'"${manifest}"'</manifest>' >> epub/book/index.opf #文件列表索引结束
     echo '<spine toc="ncx">'"${spine}"'</spine>' >> epub/book/index.opf #加载顺序列表索引结束
     echo '<guide></guide></package>' >> epub/book/index.opf  #结束包装文件
+    mv epub/book/index.opf index.opf;mv epub/book/toc.ncx toc.ncx
+    xmllint --format toc.ncx > epub/book/toc.ncx  #格式化目录文件，便于debug
+    xmllint --format index.opf > epub/book/index.opf  #格式化包装文件，便于debug
     cd epub&&zip -9 -r ../../${bookname}.epub minetype book  META-INF  #打包epub
     echo 脚本确认已经修改
 
-    cd ../.. #返回脚本执行时路径
+    cd ${pwd1} #返回脚本执行时路径
 
 done #各书之间
