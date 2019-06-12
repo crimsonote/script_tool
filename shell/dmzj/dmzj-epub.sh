@@ -6,7 +6,7 @@
 book1=$@
 if [ -z ${book1:0:1} ]
 then
-    read -p "请输入书籍变量:" book1
+    read -p "请输入书目编号:" book1
 fi
 #函数
 function manifest_fun()
@@ -25,8 +25,7 @@ function navpoint_fun()
 }
 function suiji()
 {
-    #local a=$(echo $RANDOM % 20|bc);echo "暂停${a}s" >&2;echo $a
-    echo 0
+    local a=$(echo $RANDOM % 20|bc);echo "暂停${a}s" >&2;echo $a
 }
 function html_entity()      #对html预留符号替换为实体字符
 {
@@ -137,8 +136,7 @@ do
     xmllint --format toc.ncx > epub/book/toc.ncx  #格式化目录文件，便于debug
     xmllint --format index.opf > epub/book/index.opf  #格式化包装文件，便于debug
     cd epub&&zip -9 -r ../../${bookname}.epub minetype book  META-INF  #打包epub
-    echo 脚本确认已经修改
-
+    
     cd ${pwd1} #返回脚本执行时路径
 
 done #各书之间
