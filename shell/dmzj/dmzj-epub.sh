@@ -21,7 +21,7 @@ function navpoint_fun()
 {    #目录生成  1.id 2.title 3.url
     if [ "${4}" != y ] ;then local a='</navPoint>'
     fi
-    echo '<navPoint id="'$1'"><navLabel><text>'$2'</text></navLabel><content src="'$3'" />'$a  >> epub/book/toc.ncx
+    echo '<navPoint id="'${1}'"><navLabel><text>'${2}'</text></navLabel><content src="'${3}'" />'$a  >> epub/book/toc.ncx
 }
 function suiji()
 {
@@ -51,6 +51,7 @@ do
     mkdir -p ${bookname}&&cd ${bookname}
     mkdir -p epub&&mkdir -p epub/META-INF
     echo -n "application/epub+zip"> epub/minetype
+    manifest_fun minetype ../minetype application/octet-stream
     echo "PD94bWwgdmVyc2lvbj0iMS4wIj8+Cjxjb250YWluZXIgdmVyc2lvbj0iMS4wIiB4bWxucz0idXJuOm9hc2lzOm5hbWVzOnRjOm9wZW5kb2N1bWVudDp4bWxuczpjb250YWluZXIiPgogICAgPHJvb3RmaWxlcz4KICAgICAgICA8cm9vdGZpbGUgZnVsbC1wYXRoPSJib29rL2luZGV4Lm9wZiIKICAgICAgICAgICAgbWVkaWEtdHlwZT0iYXBwbGljYXRpb24vb2VicHMtcGFja2FnZSt4bWwiIC8+CiAgICA8L3Jvb3RmaWxlcz4KPC9jb250YWluZXI+Cg=="|base64 -d > epub/META-INF/container.xml  #生成容器文件
     mkdir -p epub/book
     mkdir -p epub/book/image
@@ -62,7 +63,7 @@ do
     echo '<?xml version="1.0" encoding="UTF-8"?><package version="3.0" xmlns="http://www.idpf.org/2007/opf" unique-identifier="epub"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf"><dc:identifier id="epub">'"urn:uuid:$(uuidgen||cat /proc/sys/kernel/random/uuid)"'</dc:identifier><dc:title>'"${bookname}"'</dc:title><dc:language>'"$(echo ${LANG%.*}|tr '_' '-')"'</dc:language><dc:subject>'"${types}"'</dc:subject><dc:description>'"${introduction}"'</dc:description><dc:creator>'"${authors}"'</dc:creator><meta name="cover" content="cover_image"/></metadata>' > epub/book/index.opf #初始化包装文件
     echo '<?xml version="1.0" encoding="utf-8"?><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head></head><docTitle><text>'"${bookname}"'</text></docTitle><navMap>' > epub/book/toc.ncx  #初始化目录索引文件
     echo '<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8" /><title>'"${bookname}"'</title></head><body><p id="title_t"><img src="image/cover.jpg" /></p><h1>'${bookname}'</h1></body></html>' > epub/book/title.html   #生成标题文件
-    manifest_fun title_cover title.html application/xhtml+xml  #追加标题文件
+    manifest_fun title.html title.html application/xhtml+xml  #追加标题文件
     navpoint_fun title_title "${bookname}" title.html#title_t y  #目录生成(根）
     spine_fun title.html  #载入顺序 标题1
 
@@ -79,10 +80,10 @@ do
 
 
 	#epub,html生成
-	echo '<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><meta charset="utf-8" /><title>'"${bookname}-${volume_name}"'</title></head><body><h1 id="'"${volume}"'">'"${volume_name}"'</h1>'  > epub/book/${volume}.html  #生成html头
+	echo '<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><meta charset="utf-8" /><title>'"${bookname}-${volume_name}"'</title></head><body><h1 id="'"a${volume}"'">'"${volume_name}"'</h1>'  > epub/book/${volume}.html  #生成html头
 	navpoint_fun volume_${volume} "${volume_name}" ${volume}.html  y #追加链接至目录文件 （2）
-	manifest_fun ${volume}.html  ${volume}.html application/xhtml+xml     #追加当前卷html入包装文件
-	spine_fun ${volume}.html  #载入文件顺序列表
+	manifest_fun a${volume}.html  ${volume}.html application/xhtml+xml     #追加当前卷html入包装文件
+	spine_fun a${volume}.html  #载入文件顺序列表
 
 	
 	while [ "${json3:5:10}" == "chapter_id" ]
@@ -94,10 +95,10 @@ do
 	    json3=$(echo ${json2}|jq .[${count3}])
 	    
 	    #epub，html
-	    echo '<h2 id="'"${volume}_${chapter}"'">'"${chapter_name}"'</h2>' >> epub/book/${volume}.html  #生成章节头
+	    echo '<h2 id="'"b${volume}_${chapter}"'">'"${chapter_name}"'</h2>' >> epub/book/${volume}.html  #生成章节头
 	    text_chapter=$(cat ${title}_${volume}_${chapter}.txt)
 	    image_download=$(echo ${text_chapter}|sed 's#https://xs.dmzj.com#\n&#g'|sed 's#".#\n#g'|grep --color=no xs.dmzj.com/img)  #筛选插画url
-	    navpoint_fun id${chapter} "${chapter_name}" ${volume}.html#${volume}_${chapter} #目录输出
+	    navpoint_fun id${chapter} "${chapter_name}" ${volume}.html#b${volume}_${chapter} #目录输出
 	   
 	    
 

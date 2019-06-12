@@ -34,5 +34,6 @@ do
     esac
     json2=$(echo $json1|jq .[${count1}])
 done
-./dmzj-epub.sh ${book1}||echo "书目编号：${book1}"
+./dmzj-epub.sh ${book1}
+echo "书目编号：${book1}"
 #./dmzj.sh ${book1}
