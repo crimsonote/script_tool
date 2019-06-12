@@ -1,0 +1,33 @@
+* 动漫之家轻小说下载脚本
+** 使用说明
+1. 下载脚本。
+你可以使用
+: git clone https://github.com/tntwiki/script_tool.git
+命令来下载本存储库，当然，这需要安装 *git* 命令。
+2. 安装依赖项
+本脚本工具依赖于以下命令
+ - jq
+ - curl
+ - wget
+ - zip
+ - xmllint
+ - sed
+ - grep
+ - uuidgen （可选，如果没有则需要确保 “/proc/sys/kernel/random/uuid”可用）
+在使用apt包管理器的系统，使用
+: apt install jq curl wget zip libxml2-utils grep
+来安装脚本依赖。
+3. 执行脚本
+执行
+: ./search.dmzj.sh [要搜索的关键词]
+来搜索要下载的小说。输入N不下载此小说，超过15秒未选择则 *自动确认下载* 。一般情况下，全部确认结束后会自动开始下载。
+如果没有自动开始下载的话，请手动执行
+: ./dmzj-epub.sh [书目编号(上面一条命令的输出)]
+来进行下载操作。下载的文件会保存在 *./书名* 下。
+** 已知问题
+ -   生成的epub存在兼容性问题,可能在某些epub阅读器无法正常载入。（比如koreader）需要手动修复。（但是我不会……）
+ -   格式排版可能存在问题。可能需要人工校正。
+** 参考信息
+搜索api来自对[[https://github.com/Delsart/Bookster][bookster]]动漫之家插件的抓包，而下载之类的api则是从[[https://gist.github.com/zhihaofans/d118ec1a149284037a783b62b58186da][这个网站(需要梯子)]]找到的。
+
+版权所有 (c) tntwiki 2019
