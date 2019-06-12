@@ -39,9 +39,9 @@ do
     metadata=$(curl http://v2.api.dmzj.com/novel/${title}.json)  #获取书籍元数据
     json0=$(curl http://v2.api.dmzj.com/novel/chapter/${title}.json) #获取索引json
     #初始化变量
-    bookname=$(echo ${metadata}|jq .name -r)   #书名
+    bookname=$(echo ${metadata}|jq .name -r|tr ' ' '_')   #书名
     authors=$(echo ${metadata}|jq .authors -r) #作者
-    introduction=$(echo ${metadata}|jq .introduction -r) #书籍简介
+    introduction=$(echo ${metadata}|jq .introduction -r|tr '<br' ' '|tr '>' ' ') #书籍简介
     cover=$(echo ${metadata}|jq .cover -r) #封面图片链接
     types=$(echo ${metadata}|jq .types|jq -r .[0]|xargs -d / printf "%s;") #标签
     count2=0
@@ -49,7 +49,8 @@ do
     
     #epub文件结构生成
     mkdir -p ${bookname}&&cd ${bookname}
-    mkdir -p epub&&mkdir -p epub/META-INF
+    mkdir -p epub&&
+    mkdir -p epub/META-INF
     echo -n "application/epub+zip"> epub/minetype
     manifest_fun minetype ../minetype application/octet-stream
     echo "PD94bWwgdmVyc2lvbj0iMS4wIj8+Cjxjb250YWluZXIgdmVyc2lvbj0iMS4wIiB4bWxucz0idXJuOm9hc2lzOm5hbWVzOnRjOm9wZW5kb2N1bWVudDp4bWxuczpjb250YWluZXIiPgogICAgPHJvb3RmaWxlcz4KICAgICAgICA8cm9vdGZpbGUgZnVsbC1wYXRoPSJib29rL2luZGV4Lm9wZiIKICAgICAgICAgICAgbWVkaWEtdHlwZT0iYXBwbGljYXRpb24vb2VicHMtcGFja2FnZSt4bWwiIC8+CiAgICA8L3Jvb3RmaWxlcz4KPC9jb250YWluZXI+Cg=="|base64 -d > epub/META-INF/container.xml  #生成容器文件
