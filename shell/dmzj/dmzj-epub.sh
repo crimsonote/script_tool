@@ -139,5 +139,6 @@ do
     cd epub&&zip -9 -r ../../${bookname}.epub minetype book  META-INF  #打包epub
     
     cd ${pwd1} #返回脚本执行时路径
+    ebook-convert --version&&ebook-convert ${bookname}.epub ${bookname}-repar.epub #使用其他命令修正epub
 
 done #各书之间
