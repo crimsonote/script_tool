@@ -7,6 +7,7 @@ then
     read -p "请输入要搜索的关键词:" search
 
 fi
+DIR="$( cd "$( dirname "$0"  )" && pwd  )"  
 
 json0=$(curl "http://s.acg.dmzj.com/lnovelsum/search.php?s=${search}")
 #json0=$(cat search.json)
@@ -34,6 +35,6 @@ do
     esac
     json2=$(echo $json1|jq .[${count1}])
 done
-./dmzj-epub.sh ${book1}
+${DIR}/dmzj-epub.sh ${book1}
 echo "书目编号：${book1}"
 #./dmzj.sh ${book1}
