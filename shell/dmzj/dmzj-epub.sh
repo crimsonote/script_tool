@@ -2,7 +2,9 @@
 #json* 索引拆分次数
 #count* 计数器
 #cycle* 循环跳出
-
+#---一些设置选项--
+trans_china=1 #是否开启繁简转换，1为是，其余为否
+#-----------------
 book1=$@
 if [ -z ${book1:0:1} ]
 then
@@ -30,6 +32,14 @@ function suiji()
 function html_entity()      #对html预留符号替换为实体字符
 {
     sed  's/&/\&amp;/g'|sed 's/"/\&quot;/g'|sed 's/</\&lt;/g'|sed 's/>/\&gt;/g'|sed "s/'/\&apos;/g"
+}
+function opencc_s2t() #繁简转换
+{
+    local asd=$(cat -)
+    if [ ${trans_china} = 1 ] ;
+    then echo "$asd"|opencc -c t2s ||echo "$asd"
+    else echo "$asd"
+    fi
 }
 
 pwd1=$(pwd)
@@ -114,13 +124,8 @@ do
 		image_url=$(echo "${image_download}"|sed -n "${rows}p")
 		sleep $(suiji) #随机暂停s秒
 	    done   #章节图
-
-
-
 	    
-	    #|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#^#<p>#g'|sed 's#$#</p>#g'|sed 's#^<p> *</p>$# #g'|sed 's#<br */># #g'|sed "1d" >>epub/book/${volume}.html
-	    echo "${text_chapter}"|sed 's#>#&\n#g'|sed '/<div/d'|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#</br */>#&\n#g'|sed 's#<img#\n& #g'|sed 's#^#<p>#g'|sed 's#$#</p>#g' >> epub/book/${volume}.html
-	    #sed 's#<br */>#\n#g'|sed '/^\r*$/d'|sed "s#^#<p>#g"|sed "s%$%</p>%g"|sed "1d" >>${text_chapter}
+	    echo "${text_chapter}"|opencc_s2t|sed 's#>#&\n#g'|sed '/<div/d'|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#</br */>#&\n#g'|sed 's#<img#\n& #g'|sed 's#^#<p>#g'|sed 's#$#</p>#g' >> epub/book/${volume}.html
 	    sleep $(suiji)
 	    image_download=$(echo -n)  #重置变量
 	done   #章之间

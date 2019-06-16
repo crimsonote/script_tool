@@ -4,6 +4,7 @@
  - 能够搜索到部分隐藏小说
  - 支持目录生成
  - 支持图片(插画)下载
+ - 支持繁简转换（可关闭）
  - 使用shell完成，可以在bash环境包括[[https://github.com/NeoTerm/NeoTerm][Neoterm]]和[[https://github.com/termux/termux-app][termux]]运行。(必须依赖的软件包在这两个android终端都能正常安装)
 ** 使用说明
 *** 1.下载脚本。
@@ -21,21 +22,19 @@
  - grep          （文本处理）
  - uuidgen       （可选，用于随机生成uuid，如果没有则需要确保 “/proc/sys/kernel/random/uuid”可用）
  - ebook-convert （可选，用于修正epub格式，用来临时解决格式要求严格的程序）
+ - opencc        （可选，用于繁简转换）
 在使用apt包管理器的系统，使用
 : apt install jq curl wget zip libxml2-utils grep
 来安装必须依赖。使用
-: apt install calibre runtime
-来安装可选依赖。（嗯，Neoterm和termux都没有这两个包……）
+: apt install calibre runtime opencc
+来安装可选依赖。（嗯，Neoterm和termux都没有这几个包……）
 *** 3.执行脚本
-执行
-: ./search.dmzj.sh [要搜索的关键词]
-来搜索要下载的小说。输入N不下载此小说，超过15秒未选择则 *自动确认下载* 。一般情况下，全部确认结束后会自动开始下载。
-如果没有自动开始下载的话，请手动执行
-: ./dmzj-epub.sh [书目编号(上面一条命令的输出)]
-来进行下载操作。下载的文件会保存为 *./书名.epub* 。修正过的epub则会保存为 *./书名-repair.epub* 。
+执行 ~./search.dmzj.sh [要搜索的关键词]~ 来搜索要下载的小说。输入N不下载此小说，超过15秒未选择则 *自动确认下载* 。一般情况下，全部确认结束后会自动开始下载。
+如果没有自动开始下载的话，请手动执行 =./dmzj-epub.sh [书目编号(上面一条命令的输出)]= 来进行下载操作。下载的文件会保存为 *./书名.epub* 。修正过的epub则会保存为 *./书名-repair.epub* 。
 ** 已知问题
- -   生成的epub存在兼容性问题,可能在某些epub阅读器无法正常载入。（比如koreader）需要额外修正。
- -   格式排版可能存在问题。可能需要人工校定。
+ - 生成的epub存在兼容性问题,可能在某些epub阅读器无法正常载入。（比如koreader）需要额外修正。
+ - 格式排版可能存在问题。可能需要人工校定。
+ - 在描述或者正文中如果含有一些特殊符号可能无法正常工作。
 ** 参考信息
 搜索api来自对[[https://github.com/Delsart/Bookster][bookster]]动漫之家插件的抓包，而下载之类的api则是从[[https://gist.github.com/zhihaofans/d118ec1a149284037a783b62b58186da][这个网站(需要梯子)]]找到的。
 
