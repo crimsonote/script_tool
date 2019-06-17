@@ -27,7 +27,8 @@ function navpoint_fun()
 }
 function suiji()
 {
-    local a=$(echo $RANDOM % 20|bc);echo "暂停${a}s" >&2;echo $a
+    #local a=$(echo $RANDOM % 20|bc);echo "暂停${a}s" >&2;echo $a
+    echo 0
 }
 function html_entity()      #对html预留符号替换为实体字符
 {
@@ -102,7 +103,7 @@ do
 	    count3=$(echo "${count3}+1"|bc)
 	    chapter=$(echo ${json3}|jq .chapter_id)  #获取章节id
 	    chapter_name=$(echo ${json3}|jq .chapter_name -r|html_entity)  #获取章节名
-	    wget -t 0  https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt -O ${title}_${volume}_${chapter}.txt #下载正文
+#	    wget -t 0  https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt -O ${title}_${volume}_${chapter}.txt #下载正文
 	    json3=$(echo ${json2}|jq .[${count3}])
 	    
 	    #epub，html
@@ -118,14 +119,14 @@ do
 	    while [ -n "${image_url}" ]
 	    do
 		rows=$(echo "${rows}+1"|bc)
-		wget -t 0  ${image_url}  -O epub/book/image/${volume}_${chapter}_${rows}.${image_url##*.}
+#		wget -t 0  ${image_url}  -O epub/book/image/${volume}_${chapter}_${rows}.${image_url##*.}
 		text_chapter=$(echo "${text_chapter}"|sed "s%${image_url}%image/${volume}_${chapter}_${rows}.${image_url##*.}%g") 
 		manifest_fun ${volume}_${chapter}_${rows} image/${volume}_${chapter}_${rows}.${image_url##*.}  image/jpeg  #列出文件
 		image_url=$(echo "${image_download}"|sed -n "${rows}p")
 		sleep $(suiji) #随机暂停s秒
 	    done   #章节图
 	    
-	    echo "${text_chapter}"|opencc_s2t|sed 's#>#&\n#g'|sed '/<div/d'|tr '\n' ' '|sed 's#<br */>\r* *<br */>#\n#g'|sed 's#</br */>#&\n#g'|sed 's#<img#\n& #g'|sed 's#^#<p>#g'|sed 's#$#</p>#g' >> epub/book/${volume}.html
+	    echo "${text_chapter}"|tr -d '\r' |opencc_s2t|sed 's#>#&\n#g'|sed '/<div/d'|tr '\n' ' '|sed 's#<br */> *<br */>#\n#g'|sed 's#</br */>#&\n#g'|sed 's#<img#\n& #g'|sed 's/。  */&\n/g'|sed 's#^#<p>#g'|sed 's#$#</p>#g' >> epub/book/${volume}.html
 	    sleep $(suiji)
 	    image_download=$(echo -n)  #重置变量
 	done   #章之间

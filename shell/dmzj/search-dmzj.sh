@@ -35,6 +35,14 @@ do
     esac
     json2=$(echo $json1|jq .[${count1}])
 done
-${DIR}/dmzj-epub.sh ${book1}
 echo "书目编号：${book1}"
 #./dmzj.sh ${book1}
+read -p "确认下载？ [Y/n]" -t 15  download
+case ${download} in
+    N|n)
+	exit
+	;;
+    *)
+	echo "${book1}" |xargs ${DIR}/dmzj-epub.sh
+	;;
+esac
