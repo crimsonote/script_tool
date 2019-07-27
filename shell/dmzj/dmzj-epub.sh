@@ -103,7 +103,7 @@ do
 	    count3=$(echo "${count3}+1"|bc)
 	    chapter=$(echo ${json3}|jq .chapter_id)  #获取章节id
 	    chapter_name=$(echo ${json3}|jq .chapter_name -r|html_entity)  #获取章节名
-#	    wget -t 0  https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt -O ${title}_${volume}_${chapter}.txt #下载正文
+	    wget -t 0  https://v3api.dmzj.com/novel/download/${title}_${volume}_${chapter}.txt -O ${title}_${volume}_${chapter}.txt #下载正文
 	    json3=$(echo ${json2}|jq .[${count3}])
 	    
 	    #epub，html
@@ -119,7 +119,7 @@ do
 	    while [ -n "${image_url}" ]
 	    do
 		rows=$(echo "${rows}+1"|bc)
-#		wget -t 0  ${image_url}  -O epub/book/image/${volume}_${chapter}_${rows}.${image_url##*.}
+		wget -t 0  ${image_url}  -O epub/book/image/${volume}_${chapter}_${rows}.${image_url##*.}
 		text_chapter=$(echo "${text_chapter}"|sed "s%${image_url}%image/${volume}_${chapter}_${rows}.${image_url##*.}%g") 
 		manifest_fun ${volume}_${chapter}_${rows} image/${volume}_${chapter}_${rows}.${image_url##*.}  image/jpeg  #列出文件
 		image_url=$(echo "${image_download}"|sed -n "${rows}p")
