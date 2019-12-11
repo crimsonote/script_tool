@@ -1,6 +1,6 @@
 * 动漫之家轻小说下载脚本
 ** 功能
- - 支持自动生成epub
+ - 支持自动生成epub(不完善)
  - 能够搜索到部分隐藏小说
  - 支持目录生成
  - 支持图片(插画)下载
@@ -16,7 +16,7 @@
  - jq            （解析json）
  - curl          （下载json）
  - wget          （下载文件）
- - zip           （压缩为epub）
+ - zip           （压缩epub）
  - xmllint       （格式化xml文件）
  - sed           （文本处理）
  - grep          （文本处理）
@@ -35,7 +35,8 @@
  - 生成的epub存在兼容性问题,可能在某些epub阅读器无法正常载入。（比如koreader）需要额外修正。
  - 格式排版可能存在问题。可能需要人工校定。
  - 在描述或者正文中如果含有一些特殊符号可能无法正常工作。
+ - 初次使用时需要较长时间生成索引
 ** 参考信息
-搜索api来自对[[https://github.com/Delsart/Bookster][bookster]]动漫之家插件的抓包，而下载之类的api则是从[[https://gist.github.com/zhihaofans/d118ec1a149284037a783b62b58186da][这个网站(需要梯子)]]找到的。
++搜索api来自对[[https://github.com/Delsart/Bookster][bookster]]动漫之家插件的抓包+ (停止工作，更改为本地索引搜索)，而下载之类的api则是从[[https://gist.github.com/zhihaofans/d118ec1a149284037a783b62b58186da][这个网站(需要梯子)]]找到的。
 
 版权所有 (c) tntwiki 2019

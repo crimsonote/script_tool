@@ -143,7 +143,7 @@ do
     mv epub/book/index.opf index.opf;mv epub/book/toc.ncx toc.ncx
     xmllint --format toc.ncx > epub/book/toc.ncx  #格式化目录文件，便于debug
     xmllint --format index.opf > epub/book/index.opf  #格式化包装文件，便于debug
-    cd epub&&zip -9 -r ../../${bookname}.epub minetype book  META-INF  #打包epub
+    cd epub&&zip -Xu0 ../../${bookname}.epub minetype&&zip -9 -r ../../${bookname}.epub */  #打包epub
     
     cd ${pwd1} #返回脚本执行时路径
     ebook-convert --version&&ebook-convert ${bookname}.epub ${bookname}-repar.epub #使用其他命令修正epub
