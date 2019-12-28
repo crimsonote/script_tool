@@ -16,11 +16,11 @@ while [ -n "${search}" ]&&[ "${json2:2:2}" == id ]
 do
     count1=$(echo "${count1}+1"|bc)
     lnovel_name=$(echo $json2|jq .name)
-    echo "书名：《${lnovel_name}》"
+    echo -e "书名：《${lnovel_name}》"
     author=$(echo $json2|jq .authors)
-    echo "作者：${author}"
+    echo -e "作者：${author}"
     description=$(echo $json2|jq .introduction)
-    echo "简介：${description}"
+    echo -e "简介：${description}"
     read -t 15 -p "是否下载[Y/n]" boolean
     case ${boolean} in
 	N|n)
