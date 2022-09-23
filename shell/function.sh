@@ -63,3 +63,7 @@ echo $rnd
 
 return 0
     }
+function cpu_temperature (){
+#输出CPU温度
+cat /sys/class/thermal/thermal_zone*/temp|awk '{a+=$1}END{print a/NR/1000}'
+}
