@@ -18,8 +18,6 @@ for book in $(echo "${books}" | jq -c '.[]'); do
   id=$(echo "${book}" | jq -r '.id')
   title=$(echo "${book}" | jq -r '.title')
   formats=$(echo "${book}" | jq -r '.formats')
-    echo "${formats}" >>xxx.log
-    echo '------' >>xxx.log
   # 创建作者目录和书名目录
   author_dir="${link_root}/${author}"
   book_dir="${author_dir}/${id}-${title}"
@@ -29,7 +27,6 @@ for book in $(echo "${books}" | jq -c '.[]'); do
       # 获取文件名和文件后缀
     filename=$(basename "${format}")
     extension="${filename##*.}"
-    echo "${filename}==============================${extension}" >>xxx.log
     # 创建软连接
     ln -s "${format}" "${book_dir}/${title}.${extension}"
   done
